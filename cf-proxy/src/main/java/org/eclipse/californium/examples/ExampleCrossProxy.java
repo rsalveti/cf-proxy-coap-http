@@ -21,9 +21,14 @@ import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import org.eclipse.californium.proxy.resources.ForwardingResource;
+import org.eclipse.californium.proxy.resources.ProxyCoapClientResource;
 import org.eclipse.californium.proxy.resources.ProxyHttpClientResource;
 
 /**
+ * CoAP2CoAP: Insert in Copper:
+ *     URI: coap://localhost:PORT/coap2coap
+ *     Proxy: coap://localhost:PORT/targetA
+ *
  * CoAP2Http: Insert in Copper:
  *     URI: coap://localhost:PORT/coap2http
  *     Proxy: http://lantersoft.ch/robots.txt
@@ -35,10 +40,12 @@ public class ExampleCrossProxy {
 	private CoapServer targetServerA;
 
 	public ExampleCrossProxy() throws IOException {
+		ForwardingResource coap2coap = new ProxyCoapClientResource("coap2coap");
 		ForwardingResource coap2http = new ProxyHttpClientResource("coap2http");
 
 		// Create CoAP Server on PORT with proxy resources form CoAP to CoAP and HTTP
 		targetServerA = new CoapServer(PORT);
+		targetServerA.add(coap2coap);
 		targetServerA.add(coap2http);
 		targetServerA.start();
 	}
@@ -46,4 +53,5 @@ public class ExampleCrossProxy {
 	public static void main(String[] args) throws Exception {
 		new ExampleCrossProxy();
 	}
+
 }
